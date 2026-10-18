@@ -72,6 +72,20 @@ const couponRoute = require("./routes/couponRoutes");
 const paymentRoute = require("./routes/paymentRoutes");
 const contactRoute = require("./routes/contactRoutes");
 
+// Health Check and Root API status
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "online",
+    service: "Telemedicine Backend API",
+    message: "API server is running smoothly 🚀",
+    endpoints: "/api"
+  });
+});
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "healthy", uptime: process.uptime() });
+});
+
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/doctor", doctorRoute);
