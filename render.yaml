@@ -1,0 +1,50 @@
+services:
+  # =================================================================
+  # 1. Backend API Service
+  # =================================================================
+  - type: web
+    name: telemedicine-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: ENABLE_GOOGLE_AUTH
+        value: "false"
+      - key: MONGODB_URL
+        sync: false # Set securely in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true # Render generates a secure secret automatically
+      - key: FRONTEND_URL
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false # Free 300 emails/day via brevo.com
+      - key: BREVO_SENDER_EMAIL
+        sync: false
+      - key: EMAIL_FROM_NAME
+        value: "Telemedicine Support"
+
+  # =================================================================
+  # 2. Frontend React / Vite Static Site
+  # =================================================================
+  - type: web
+    name: telemedicine-frontend
+    runtime: static
+    rootDir: Frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      # React Router SPA catch-all rewrite to prevent 404s on page refresh
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false # Point to https://<backend-service-name>.onrender.com/api
+      - key: VITE_ENABLE_GOOGLE_AUTH
+        value: "false"
